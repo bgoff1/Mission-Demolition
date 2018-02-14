@@ -26,7 +26,7 @@ public class ProjectileLine : MonoBehaviour {
 		}
 		set {
 			_poi = value;
-			if (_poi == null)
+			if (_poi != null)
 			{
 				line.enabled = false;
 				points = new List<Vector3>();
@@ -46,8 +46,9 @@ public class ProjectileLine : MonoBehaviour {
 	public void AddPoint()
 	{
 		Vector3 pt = _poi.transform.position;
-		if (points.Count > 0 && (pt - lastPoint).magnitude < minDist)
+		if (points.Count > 0 && (pt - lastPoint).magnitude < minDist) {
 			return;
+		}
 		if (points.Count == 0)
 		{
 			Vector3 launchPosDiff = pt - Slingshot.LAUNCH_POS;
@@ -68,8 +69,9 @@ public class ProjectileLine : MonoBehaviour {
 
 	public Vector3 lastPoint {
 		get {
-			if (points == null)
+			if (points == null) {
 				return (Vector3.zero);
+			}
 			return (points[points.Count - 1]);
 		}
 	}
@@ -79,12 +81,14 @@ public class ProjectileLine : MonoBehaviour {
 		if (poi == null)
 		{
 			if (FollowCam.POI != null) {
-				if (FollowCam.POI.tag == "Projectile")
+				if (FollowCam.POI.tag == "Projectile") {
 					poi = FollowCam.POI;
-				else
+				} else {
 					return;
-			} else
+				}
+			} else {
 				return;
+			}
 		}
 		AddPoint();
 		if (FollowCam.POI == null) {
