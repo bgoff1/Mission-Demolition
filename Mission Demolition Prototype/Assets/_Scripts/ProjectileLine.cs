@@ -52,7 +52,6 @@ public class ProjectileLine : MonoBehaviour {
 		if (points.Count == 0)
 		{
 			Vector3 launchPosDiff = pt - Slingshot.LAUNCH_POS;
-			// adds an extra bit of line later.
 			points.Add(pt + launchPosDiff);
 			points.Add(pt);
 			line.positionCount = 2;

@@ -10,12 +10,14 @@ public class Slingshot : MonoBehaviour {
 
 	[Header("Set Dynamically")]
 	public bool aimingMode;
+    public bool canShoot;
 	public GameObject launchPoint;
 	public GameObject projectile;
 	public Vector3 launchPos;
 
-	private Rigidbody projectileRigidbody;
-
+    private LineRenderer slingLine;
+    private Rigidbody projectileRigidbody;
+    
 	static public Vector3 LAUNCH_POS {
 		get {
 			if (S == null) return Vector3.zero;
@@ -25,10 +27,14 @@ public class Slingshot : MonoBehaviour {
 
 	void Awake() {
 		S = this;
+        canShoot = true;
 		Transform launchPointTrans = transform.Find("LaunchPoint");
 		launchPoint = launchPointTrans.gameObject;
 		launchPoint.SetActive(false);
 		launchPos = launchPointTrans.position;
+
+        slingLine = GetComponent<LineRenderer>();
+        slingLine.enabled = false;
 	}
 
 	void OnMouseEnter()	{
@@ -42,17 +48,20 @@ public class Slingshot : MonoBehaviour {
 	}
 
 	void OnMouseDown()	{
-		aimingMode = true;
-		projectile = Instantiate(prefabProjectile) as GameObject;
-		projectile.transform.position = launchPos;
-		projectile.GetComponent<Rigidbody>().isKinematic = true;
+        if (canShoot)
+        {
+            aimingMode = true;
+            projectile = Instantiate(prefabProjectile) as GameObject;
+            projectile.transform.position = launchPos;
+            projectile.GetComponent<Rigidbody>().isKinematic = true;
 
-		projectileRigidbody = projectile.GetComponent<Rigidbody>();
-		projectileRigidbody.isKinematic = true;
+            projectileRigidbody = projectile.GetComponent<Rigidbody>();
+            projectileRigidbody.isKinematic = true;
+        }
 	}
 
 	void Update() {
-		if (!aimingMode) return;
+        if (!aimingMode) return;
 
 		Vector3 mousePos2D = Input.mousePosition;
 		mousePos2D.z = -Camera.main.transform.position.z;
@@ -70,15 +79,28 @@ public class Slingshot : MonoBehaviour {
 		Vector3 projPos = launchPos + mouseDelta;
 		projectile.transform.position = projPos;
 
-		if (Input.GetMouseButtonUp(0))
-		{
-			aimingMode = false;
-			projectileRigidbody.isKinematic = false;
-			projectileRigidbody.velocity = -mouseDelta * velocityMult;
-			FollowCam.POI = projectile;
-			projectile = null;
-			MissionDemolition.ShotFired();
-			ProjectileLine.S.poi = projectile;
-		}
-	}
+        // Display slingLine from slingshot to cursor
+        slingLine.SetPosition(0, launchPos);
+        slingLine.SetPosition(1, projPos);
+        slingLine.enabled = true;
+
+            if (canShoot && Input.GetMouseButtonUp(0))
+            {
+                aimingMode = false;
+                projectileRigidbody.isKinematic = false;
+                projectileRigidbody.velocity = -mouseDelta * velocityMult;
+                FollowCam.POI = projectile;
+                projectile = null;
+                MissionDemolition.ShotFired();
+                canShoot = false;
+                Invoke("AllowShooting", 3);
+                ProjectileLine.S.poi = projectile;
+                slingLine.enabled = false;
+            }
+    }
+
+    private void AllowShooting()
+    {
+        canShoot = true;
+    }
 }

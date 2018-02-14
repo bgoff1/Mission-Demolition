@@ -23,8 +23,8 @@ public class CloudCrafter : MonoBehaviour {
 		{
 			cloud = Instantiate<GameObject>(cloudPrefab);
 			Vector3 cPos = Vector3.zero;
-			cPos.x = Random.Range(cloudPosMin.x, cloudPosMin.y);
-			cPos.y = Random.Range(cloudPosMax.x, cloudPosMax.y);
+			cPos.x = Random.Range(cloudPosMin.x, cloudPosMax.x);
+			cPos.y = Random.Range(cloudPosMin.y, cloudPosMax.y);
 			float scaleU = Random.value;
 			float scaleVal = Mathf.Lerp(cloudScaleMin, cloudScaleMax, scaleU);
 			cPos.y = Mathf.Lerp(cloudPosMin.y, cPos.y, scaleU);
